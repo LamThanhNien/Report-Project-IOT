@@ -1,0 +1,66 @@
+{
+  "title": "Quản lý người dùng phụ",
+  "subtitle": "Tạo và quản lý quyền truy cập của người dùng phụ thuộc tenant này.",
+  "add_user": "Thêm người dùng phụ",
+  "edit_user": "Chỉnh sửa người dùng phụ",
+  "remove_user": "Xóa người dùng phụ",
+  "no_permission_title": "Không có quyền truy cập",
+  "no_permission_desc": "Bạn không có quyền xem trang quản lý người dùng phụ.",
+  "col": {
+    "email": "Email",
+    "full_name": "Họ và tên",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "permissions": "Quyền hạn",
+    "created": "Ngày tạo"
+  },
+  "status": {
+    "active": "Hoạt động",
+    "inactive": "Vô hiệu"
+  },
+  "roles": {
+    "tenant_owner": "Chủ sở hữu Tenant",
+    "viewer": "Người xem"
+  },
+  "permission_summary": {
+    "full_access": "Toàn quyền",
+    "view_only": "Chỉ xem",
+    "custom_access": "Tùy chỉnh ({{count}} quyền)"
+  },
+  "form": {
+    "email_label": "Email *",
+    "password_label": "Mật khẩu *",
+    "full_name_label": "Họ và tên",
+    "role_label": "Vai trò",
+    "permissions_label": "Cơ chế phân quyền",
+    "role_preset_hint": "Tài khoản Viewer chỉ có quyền xem. Bạn có thể chọn các quyền xem bên dưới.",
+    "invalid_email": "Vui lòng nhập địa chỉ email hợp lệ.",
+    "rule_min_8": "Tối thiểu 8 ký tự",
+    "rule_max_128": "Tối đa 128 ký tự",
+    "rule_uppercase": "Ít nhất 1 chữ hoa",
+    "rule_lowercase": "Ít nhất 1 chữ thường",
+    "rule_number": "Ít nhất 1 chữ số"
+  },
+  "actions": {
+    "cancel": "Huỷ",
+    "save": "Lưu thay đổi",
+    "create": "Tạo người dùng",
+    "saving": "Đang lưu...",
+    "remove": "Xóa"
+  },
+  "confirm_remove": {
+    "title": "Xóa người dùng phụ",
+    "description": "Bạn có chắc chắn muốn xóa tài khoản {{email}} khỏi tenant này? Tài khoản này sẽ không còn quyền truy cập cổng tenant.",
+    "confirm_btn": "Xóa người dùng",
+    "cancel_btn": "Huỷ"
+  },
+  "empty": {
+    "title": "Chưa có người dùng phụ nào",
+    "description": "Thêm người dùng phụ để cho phép người khác truy cập cổng tenant này."
+  },
+  "banners": {
+    "created_success": "Đã tạo tài khoản người dùng phụ thành công.",
+    "updated_success": "Đã cập nhật thông tin người dùng phụ thành công.",
+    "deleted_success": "Đã xóa tài khoản người dùng phụ."
+  }
+}

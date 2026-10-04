@@ -1,0 +1,21 @@
+# Production MQTT ACL – deny‑by‑default (no inline comments)
+
+# Backend service account – minimal rights
+user aifom_backend
+topic read $SYS/#
+topic read devices/+/telemetry
+topic read devices/+/status
+topic read devices/+/heartbeat
+topic read devices/+/events
+topic read devices/+/ota/status
+topic write devices/+/commands
+topic write devices/+/ota
+
+# Per‑device isolation – username = device_uid
+pattern write devices/%u/telemetry
+pattern write devices/%u/status
+pattern write devices/%u/heartbeat
+pattern write devices/%u/events
+pattern write devices/%u/ota/status
+pattern read  devices/%u/commands
+pattern read  devices/%u/ota

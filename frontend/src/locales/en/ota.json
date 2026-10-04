@@ -1,0 +1,122 @@
+{
+  "page_title": "OTA / Firmware",
+  "page_subtitle": "Manage firmware versions, OTA campaigns, and firmware update history for ESP32 devices.",
+  "actions": {
+    "refresh": "Refresh",
+    "upload_firmware": "Upload Firmware",
+    "create_ota": "Create OTA",
+    "cancel": "Cancel",
+    "upload": "Upload",
+    "compile_and_upload": "Compile & Upload",
+    "compiling_and_creating": "Compiling & creating OTA...",
+    "uploading": "Uploading...",
+    "creating": "Creating...",
+    "restore": "Restore",
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "tabs": {
+    "firmware_library": "Firmware Library",
+    "ota_jobs": "OTA Jobs",
+    "ota_history": "OTA History"
+  },
+  "filters": {
+    "active_jobs": "Active Jobs",
+    "archived_jobs": "Archived Jobs",
+    "all_jobs": "All Jobs",
+    "active_history": "Active History",
+    "archived_history": "Archived History",
+    "all_history": "All History",
+    "active_firmware": "Active Firmware",
+    "archived_firmware": "Archived Firmware",
+    "all_firmware": "All Firmware",
+    "search_placeholder": "Search by version, hash…"
+  },
+  "col": {
+    "device": "Device",
+    "firmware": "Firmware",
+    "status": "Status",
+    "progress": "Progress",
+    "requested_at": "Requested At",
+    "completed_at": "Completed At",
+    "error": "Error",
+    "version": "Version",
+    "signature": "Signature",
+    "target": "Target",
+    "size": "Size",
+    "sha256": "SHA-256",
+    "uploaded": "Uploaded",
+    "actions": "Actions"
+  },
+  "status": {
+    "timed_out": "Timed Out",
+    "error_timed_out": "Device unresponsive (Request timed out)",
+    "source_only": "Source Code Only",
+    "source_not_compiled": "Uncompiled source code — cannot be used for OTA",
+    "source_compiled": "Compiled from .ino source code",
+    "tag_source": "Source",
+    "tag_compiled": "Compiled"
+  },
+  "empty": {
+    "no_active_jobs_title": "No active OTA jobs",
+    "no_active_jobs_desc": "Click 'Create OTA' to initiate a firmware update campaign for devices.",
+    "no_history_title": "No OTA history yet",
+    "no_history_desc": "Firmware update history appears here after OTA jobs are created.",
+    "no_firmware_title": "No firmware uploaded yet",
+    "no_firmware_desc": "Upload your first .bin file to start OTA releases."
+  },
+  "upload_modal": {
+    "title": "Upload or Compile New Firmware",
+    "mode_binary": "Upload Binary (.bin)",
+    "mode_source": "Compile from Source Code (.ino)",
+    "label_version": "Version *",
+    "label_hardware_model": "Hardware model *",
+    "select_hardware_model": "-- Select Hardware Model --",
+    "label_board_fqbn": "Board FQBN *",
+    "label_release_notes": "Release Notes",
+    "label_binary_file": "Binary File (.bin) *",
+    "label_arduino_source": "Arduino Source Code (.ino) *",
+    "upload_ino_file": "Upload .ino file",
+    "loading_editor": "Loading editor…",
+    "err_version_required": "Please enter version",
+    "err_target_required": "Please select hardware model",
+    "err_fqbn_required": "Please enter Board FQBN",
+    "err_source_required": "Please write or upload .ino source code",
+    "err_bin_file_required": "Select a compiled firmware .bin file",
+    "err_bin_extension_only": "Only precompiled .bin firmware files are supported",
+    "err_bin_empty": "Firmware file cannot be empty"
+  },
+  "source_viewer": {
+    "title": "Source code — {{version}}",
+    "target": "Target:",
+    "type": "Type:",
+    "compiled": "Compiled",
+    "not_compiled": "Uncompiled",
+    "loading": "Loading…"
+  },
+  "create_modal": {
+    "title": "Create OTA Campaign",
+    "target_device": "Device",
+    "target_group": "Group",
+    "label_hardware_model": "Hardware model",
+    "all_hardware_models": "— All —",
+    "hardware_model_hint": "Select a hardware model to filter compatible devices and firmware.",
+    "label_device": "Device *",
+    "select_device": "Select device",
+    "label_device_group": "Device Group *",
+    "select_device_group": "Select device group",
+    "no_active_groups": "No active device groups available.",
+    "label_firmware_version": "Firmware Version *",
+    "select_firmware": "— Select Firmware —",
+    "no_firmware_available": "No firmware available. Upload firmware first.",
+    "ota_notice": "Upon creation, an OTA command will be dispatched via MQTT. The device will fetch the firmware image and report execution progress back to the system.",
+    "err_device_required": "Please select a device",
+    "err_group_required": "Please select a device group",
+    "err_firmware_required": "Please select a firmware version"
+  },
+  "confirm": {
+    "restore_job": "Are you sure you want to restore this OTA job?",
+    "archive_job": "Are you sure you want to archive this OTA job?",
+    "delete_firmware": "Are you sure you want to permanently delete this firmware? This action cannot be undone and can only be performed if the firmware has never been used in an OTA Job."
+  }
+}

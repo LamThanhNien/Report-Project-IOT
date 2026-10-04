@@ -1,0 +1,122 @@
+{
+  "page_title": "Cập nhật OTA & Firmware",
+  "page_subtitle": "Quản lý các phiên bản firmware, chiến dịch OTA và lịch sử cập nhật firmware cho các thiết bị ESP32.",
+  "actions": {
+    "refresh": "Làm mới",
+    "upload_firmware": "Tải lên firmware",
+    "create_ota": "Tạo OTA",
+    "cancel": "Hủy",
+    "upload": "Tải lên",
+    "compile_and_upload": "Biên dịch & Tải lên",
+    "compiling_and_creating": "Đang biên dịch & tạo OTA...",
+    "uploading": "Đang tải lên...",
+    "creating": "Đang tạo...",
+    "restore": "Khôi phục",
+    "archive": "Lưu trữ",
+    "delete": "Xóa"
+  },
+  "tabs": {
+    "firmware_library": "Thư viện Firmware",
+    "ota_jobs": "OTA Jobs",
+    "ota_history": "Lịch sử OTA"
+  },
+  "filters": {
+    "active_jobs": "Active Jobs",
+    "archived_jobs": "Archived Jobs",
+    "all_jobs": "All Jobs",
+    "active_history": "Active History",
+    "archived_history": "Archived History",
+    "all_history": "All History",
+    "active_firmware": "Active Firmware",
+    "archived_firmware": "Archived Firmware",
+    "all_firmware": "All Firmware",
+    "search_placeholder": "Tìm theo version, hash…"
+  },
+  "col": {
+    "device": "Thiết bị",
+    "firmware": "Firmware",
+    "status": "Trạng thái",
+    "progress": "Tiến trình",
+    "requested_at": "Yêu cầu lúc",
+    "completed_at": "Hoàn thành",
+    "error": "Lỗi",
+    "version": "Version",
+    "signature": "Xác thực",
+    "target": "Target",
+    "size": "Kích thước",
+    "sha256": "SHA-256",
+    "uploaded": "Tải lên",
+    "actions": "Thao tác"
+  },
+  "status": {
+    "timed_out": "Hết hạn",
+    "error_timed_out": "Thiết bị không phản hồi (Yêu cầu hết hạn)",
+    "source_only": "Chỉ có source code",
+    "source_not_compiled": "Source code chưa được biên dịch — không thể dùng cho OTA",
+    "source_compiled": "Được biên dịch từ source code .ino",
+    "tag_source": "Nguồn",
+    "tag_compiled": "Đã biên dịch"
+  },
+  "empty": {
+    "no_active_jobs_title": "Chưa có OTA job nào",
+    "no_active_jobs_desc": "Nhấn 'Tạo OTA' để khởi tạo chiến dịch cập nhật firmware cho thiết bị.",
+    "no_history_title": "Chưa có lịch sử OTA",
+    "no_history_desc": "Lịch sử cập nhật firmware sẽ hiển thị ở đây sau khi các OTA job được tạo.",
+    "no_firmware_title": "Chưa có firmware nào",
+    "no_firmware_desc": "Tải lên file .bin đầu tiên để bắt đầu phát hành OTA."
+  },
+  "upload_modal": {
+    "title": "Tải lên hoặc biên dịch firmware mới",
+    "mode_binary": "Tải lên Binary (.bin)",
+    "mode_source": "Biên dịch từ Source Code (.ino)",
+    "label_version": "Version *",
+    "label_hardware_model": "Hardware model *",
+    "select_hardware_model": "-- Chọn Hardware model --",
+    "label_board_fqbn": "Board FQBN *",
+    "label_release_notes": "Ghi chú phiên bản",
+    "label_binary_file": "File binary *",
+    "label_arduino_source": "Mã nguồn Arduino (.ino) *",
+    "upload_ino_file": "Tải lên tệp .ino",
+    "loading_editor": "Đang tải trình soạn thảo…",
+    "err_version_required": "Vui lòng nhập version",
+    "err_target_required": "Vui lòng chọn hardware model",
+    "err_fqbn_required": "Vui lòng nhập Board FQBN",
+    "err_source_required": "Vui lòng viết hoặc tải lên mã nguồn .ino",
+    "err_bin_file_required": "Vui lòng chọn tệp .bin đã biên dịch",
+    "err_bin_extension_only": "Chỉ hỗ trợ tệp firmware định dạng .bin đã biên dịch",
+    "err_bin_empty": "Tệp firmware không được rỗng"
+  },
+  "source_viewer": {
+    "title": "Source code — {{version}}",
+    "target": "Target:",
+    "type": "Loại:",
+    "compiled": "Đã biên dịch",
+    "not_compiled": "Chưa biên dịch",
+    "loading": "Đang tải…"
+  },
+  "create_modal": {
+    "title": "Tạo chiến dịch OTA",
+    "target_device": "Thiết bị",
+    "target_group": "Nhóm",
+    "label_hardware_model": "Hardware model",
+    "all_hardware_models": "— Tất cả —",
+    "hardware_model_hint": "Chọn Hardware model để lọc danh sách thiết bị và firmware tương thích.",
+    "label_device": "Thiết bị *",
+    "select_device": "Chọn thiết bị",
+    "label_device_group": "Nhóm thiết bị *",
+    "select_device_group": "Chọn nhóm thiết bị",
+    "no_active_groups": "Không có nhóm thiết bị nào đang hoạt động.",
+    "label_firmware_version": "Phiên bản firmware *",
+    "select_firmware": "— Chọn firmware —",
+    "no_firmware_available": "Chưa có firmware. Hãy tải lên firmware trước.",
+    "ota_notice": "Sau khi tạo, lệnh OTA sẽ được gửi đến thiết bị qua MQTT. Thiết bị sẽ tải firmware và báo cáo tiến trình về hệ thống.",
+    "err_device_required": "Vui lòng chọn thiết bị",
+    "err_group_required": "Vui lòng chọn nhóm thiết bị",
+    "err_firmware_required": "Vui lòng chọn phiên bản firmware"
+  },
+  "confirm": {
+    "restore_job": "Bạn có chắc muốn khôi phục OTA job này?",
+    "archive_job": "Bạn có chắc muốn lưu trữ OTA job này?",
+    "delete_firmware": "Bạn có chắc chắn muốn xóa vĩnh viễn firmware này? Hành động này không thể hoàn tác và chỉ có thể thực hiện nếu firmware chưa từng được dùng trong OTA Job."
+  }
+}

@@ -1,0 +1,198 @@
+# ============================================================================
+# AIFOM – .gitattributes
+# Mục tiêu:
+#  - Chuẩn hóa line ending (LF trong repo, OS check-out có thể là CRLF).
+#  - Đánh dấu binary để Git không cố diff/merge.
+#  - Ẩn file generated khỏi diff GitHub khi review PR.
+#  - Hint cho linguist để thống kê ngôn ngữ đúng.
+# ============================================================================
+
+# Mặc định: text auto-detect, normalize sang LF khi commit
+* text=auto eol=lf
+
+# ----------------------------------------------------------------------------
+# Source code – luôn LF
+# ----------------------------------------------------------------------------
+*.py        text eol=lf diff=python
+*.pyi       text eol=lf diff=python
+*.ipynb     text eol=lf
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.js        text eol=lf
+*.jsx       text eol=lf
+*.mjs       text eol=lf
+*.cjs       text eol=lf
+*.json      text eol=lf
+*.jsonc     text eol=lf
+*.html      text eol=lf diff=html
+*.css       text eol=lf diff=css
+*.scss      text eol=lf
+*.sass      text eol=lf
+*.md        text eol=lf
+*.markdown  text eol=lf
+*.txt       text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.toml      text eol=lf
+*.ini       text eol=lf
+*.cfg       text eol=lf
+*.env.example text eol=lf
+
+# C / C++ / firmware
+*.c         text eol=lf diff=cpp
+*.h         text eol=lf diff=cpp
+*.cpp       text eol=lf diff=cpp
+*.cc        text eol=lf diff=cpp
+*.hpp       text eol=lf diff=cpp
+*.hh        text eol=lf diff=cpp
+*.ld        text eol=lf
+
+# Shell – LF bắt buộc (CRLF làm script gãy trên Linux)
+*.sh        text eol=lf
+*.bash      text eol=lf
+
+# PowerShell – CRLF an toàn hơn cho Windows
+*.ps1       text eol=crlf
+*.psm1      text eol=crlf
+
+# Batch / cmd – Windows
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Makefile và tương tự – LF, không expand tab
+Makefile    text eol=lf
+makefile    text eol=lf
+GNUmakefile text eol=lf
+*.mk        text eol=lf
+Dockerfile  text eol=lf
+Dockerfile.* text eol=lf
+*.dockerfile text eol=lf
+.dockerignore text eol=lf
+.gitignore  text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+.env.example text eol=lf
+*.proto     text eol=lf
+*.sql       text eol=lf
+
+# ESP-IDF cấu hình
+CMakeLists.txt   text eol=lf
+*.cmake          text eol=lf
+sdkconfig.defaults text eol=lf
+partitions.csv   text eol=lf
+component.mk     text eol=lf
+Kconfig          text eol=lf
+Kconfig.projbuild text eol=lf
+
+# ----------------------------------------------------------------------------
+# Binary – Git không diff/merge
+# ----------------------------------------------------------------------------
+*.bin       binary
+*.elf       binary
+*.o         binary
+*.a         binary
+*.lib       binary
+*.so        binary
+*.dll       binary
+*.dylib     binary
+*.exe       binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.svg       text eol=lf
+*.webp      binary
+*.bmp       binary
+*.pdf       binary
+*.zip       binary
+*.tar       binary
+*.tar.gz    binary
+*.tgz       binary
+*.gz        binary
+*.7z        binary
+*.rar       binary
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+*.eot       binary
+*.mp3       binary
+*.mp4       binary
+*.mov       binary
+*.webm      binary
+*.wav       binary
+
+# ML/TinyML artifact – binary
+*.tflite    binary
+*.pb        binary
+*.h5        binary
+*.onnx      binary
+*.pt        binary
+*.pth       binary
+*.ckpt      binary
+*.joblib    binary
+*.pkl       binary
+*.npz       binary
+*.npy       binary
+
+# Database dump / firmware ký
+*.dump      binary
+*.sqlite    binary
+*.sqlite3   binary
+*.db        binary
+*.signed    binary
+*.sig       binary
+
+# ----------------------------------------------------------------------------
+# Lockfile / generated – ẩn khỏi diff PR mặc định
+# ----------------------------------------------------------------------------
+package-lock.json   linguist-generated=true
+pnpm-lock.yaml      linguist-generated=true
+yarn.lock           linguist-generated=true
+poetry.lock         linguist-generated=true
+Pipfile.lock        linguist-generated=true
+dependencies.lock   linguist-generated=true
+
+# Alembic migration – generated nhưng vẫn cần review
+alembic/versions/*.py text eol=lf
+
+# Auto-generated từ xxd -i (TFLite -> C array)
+firmware/components/model_runtime/models/*.cc linguist-generated=true
+firmware/components/model_runtime/models/*.h  linguist-generated=true
+
+# OpenAPI schema sinh từ FastAPI nếu commit
+**/openapi.json     linguist-generated=true
+**/openapi.yaml     linguist-generated=true
+
+# ----------------------------------------------------------------------------
+# Tài liệu sinh tự động hoặc nháp
+# ----------------------------------------------------------------------------
+docs/api/*.html     linguist-generated=true
+site/               linguist-generated=true
+graphify-out/*.html linguist-generated=true
+tester/reports/*.html linguist-generated=true
+tester/e2e/playwright-report/** linguist-generated=true
+
+# ----------------------------------------------------------------------------
+# Linguist hint – tránh GitHub đếm sai tỷ lệ ngôn ngữ
+# ----------------------------------------------------------------------------
+iot/firmware/**     linguist-language=C
+ai/notebooks/**     linguist-documentation=true
+docs/**             linguist-documentation=true
+infrastructure/**   linguist-vendored=false
+
+# ----------------------------------------------------------------------------
+# Export-ignore: không bao gồm khi `git archive` (tạo tarball release)
+# ----------------------------------------------------------------------------
+.github/            export-ignore
+.gitignore          export-ignore
+.gitattributes      export-ignore
+.editorconfig       export-ignore
+.pre-commit-config.yaml export-ignore
+tests/              export-ignore
+**/tests/           export-ignore
+**/test_*.py        export-ignore
+docs/**             export-ignore
+.codex/             export-ignore
+.claude/            export-ignore

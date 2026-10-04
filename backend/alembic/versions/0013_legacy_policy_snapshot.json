@@ -1,0 +1,996 @@
+[
+  {
+    "schemaname": "public",
+    "tablename": "alerts",
+    "policyname": "platform_engineer_ack_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "UPDATE",
+    "qual": "((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = ANY ((ARRAY['open'::character varying, 'acknowledged'::character varying])::text[])) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) @> '[\"platform.alerts.acknowledge\"]'::jsonb)))))",
+    "with_check": "((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = 'acknowledged'::text) AND (acknowledged_at IS NOT NULL) AND (acknowledged_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid))",
+    "new_qual": "false",
+    "new_with_check": "false"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "alerts",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "anomaly_events",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_logs",
+    "policyname": "platform_engineer_alert_ack_audit_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((action)::text = 'platform_engineer_alert_acknowledge'::text) AND ((resource_type)::text = 'alert'::text) AND (resource_id IS NOT NULL) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) @> '[\"platform.alerts.acknowledge\"]'::jsonb)))) AND ((resource_id)::text ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'::text) AND (EXISTS ( SELECT 1\n   FROM alerts\n  WHERE ((alerts.id = (audit_logs.resource_id)::uuid) AND ((alerts.status)::text = 'acknowledged'::text) AND (alerts.acknowledged_by_user_id = audit_logs.user_id) AND (NOT (alerts.tenant_id IS DISTINCT FROM audit_logs.tenant_id))))))",
+    "new_qual": null,
+    "new_with_check": "false"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_logs",
+    "policyname": "platform_engineer_diagnostic_audit_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((action)::text = ANY ((ARRAY['platform_engineer_diagnostic_probe_intent'::character varying, 'platform_engineer_diagnostic_probe_outcome'::character varying, 'platform_engineer_mqtt_trace_intent'::character varying, 'platform_engineer_mqtt_trace_outcome'::character varying])::text[])) AND ((resource_type)::text = 'device'::text) AND ((resource_id)::text ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'::text) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (users.tenant_id IS NULL) AND (users.is_active = true) AND ((((audit_logs.action)::text ~~ 'platform_engineer_diagnostic_probe_%'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) @> '[\"platform.diagnostics.probe\"]'::jsonb)) OR (((audit_logs.action)::text ~~ 'platform_engineer_mqtt_trace_%'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) @> '[\"platform.diagnostics.trace\"]'::jsonb)))))) AND (EXISTS ( SELECT 1\n   FROM devices\n  WHERE ((devices.id = (audit_logs.resource_id)::uuid) AND (NOT (devices.tenant_id IS DISTINCT FROM audit_logs.tenant_id)) AND ((((devices.target_classification)::text = ANY ((ARRAY['lab'::character varying, 'simulator'::character varying])::text[])) AND (devices.tenant_id IS NULL)) OR (EXISTS ( SELECT 1\n           FROM support_grants\n          WHERE ((support_grants.tenant_id = devices.tenant_id) AND ((support_grants.engineer_user_id IS NULL) OR (support_grants.engineer_user_id = audit_logs.user_id)) AND (support_grants.revoked_at IS NULL) AND ((clock_timestamp() >= support_grants.starts_at) AND (clock_timestamp() <= support_grants.expires_at)) AND (support_grants.allowed_actions ?\n                CASE\n                    WHEN ((audit_logs.action)::text ~~ 'platform_engineer_diagnostic_probe_%'::text) THEN 'diagnostics'::text\n                    ELSE 'mqtt_trace'::text\n                END) AND (((support_grants.scope_type)::text = 'tenant'::text) OR (((support_grants.scope_type)::text = 'project'::text) AND (support_grants.target_project_id = devices.project_id)) OR (((support_grants.scope_type)::text = 'device'::text) AND (support_grants.target_device_id = devices.id)))))))))))",
+    "new_qual": null,
+    "new_with_check": "false"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "audit_logs",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "automation_rule_executions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "automation_rules",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "command_dispatches",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "command_targets",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "command_templates",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "datastream_template_compatibilities",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_capabilities",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_credentials",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_group_members",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_groups",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_health",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "device_status_events",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "devices",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "diagnostic_trace_sessions",
+    "policyname": "diagnostic_trace_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (engineer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = diagnostic_trace_sessions.engineer_user_id) AND (users.tenant_id IS NULL) AND (users.is_active = true) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.diagnostics.trace'::text)))) AND (EXISTS ( SELECT 1\n   FROM devices\n  WHERE ((devices.id = diagnostic_trace_sessions.device_id) AND ((((devices.target_classification)::text = ANY ((ARRAY['lab'::character varying, 'simulator'::character varying])::text[])) AND (devices.tenant_id IS NULL)) OR (EXISTS ( SELECT 1\n           FROM support_grants\n          WHERE ((support_grants.id = diagnostic_trace_sessions.support_grant_id) AND (support_grants.tenant_id = devices.tenant_id) AND (support_grants.revoked_at IS NULL) AND ((clock_timestamp() >= support_grants.starts_at) AND (clock_timestamp() <= support_grants.expires_at)) AND (support_grants.allowed_actions ? 'mqtt_trace'::text))))))))))",
+    "new_qual": null,
+    "new_with_check": "current_setting('app.bypass_rls'::text, true) = 'true'::text"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "diagnostic_trace_sessions",
+    "policyname": "diagnostic_trace_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (engineer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = diagnostic_trace_sessions.engineer_user_id) AND (users.tenant_id IS NULL) AND (users.is_active = true) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.diagnostics.trace'::text))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "diagnostic_trace_sessions",
+    "policyname": "diagnostic_trace_update_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "UPDATE",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (engineer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text, 'platform_engineer'::text])))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text])))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "firmware_versions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "health_scores",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ml_anomaly_events",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ml_inference_results",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ml_model_versions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ml_models",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ml_training_jobs",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "model_artifacts",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "model_deployments",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "model_predictions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ota_campaign_targets",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ota_campaigns",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ota_job_events",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "ota_jobs",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_firmware_references",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_members",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_pages",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_events",
+    "policyname": "project_template_lab_events_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (EXISTS ( SELECT 1\n   FROM (project_template_lab_sessions s\n     JOIN users u ON ((u.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))\n  WHERE ((s.id = project_template_lab_events.session_id) AND (COALESCE((u.permissions)::jsonb, '[]'::jsonb) ?| ARRAY['platform.templates.validate'::text, 'platform.templates.view'::text, 'platform.project_templates.view'::text]))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_events",
+    "policyname": "project_template_lab_events_write_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))",
+    "new_qual": null,
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_sessions",
+    "policyname": "project_template_lab_sessions_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (EXISTS ( SELECT 1\n   FROM users u\n  WHERE ((u.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (COALESCE((u.permissions)::jsonb, '[]'::jsonb) ?| ARRAY['platform.templates.validate'::text, 'platform.templates.view'::text, 'platform.project_templates.view'::text]))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_sessions",
+    "policyname": "project_template_lab_sessions_write_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "ALL",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users u\n  WHERE ((u.id = project_template_lab_sessions.created_by_user_id) AND (COALESCE((u.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.validate'::text))))))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_simulator_runs",
+    "policyname": "project_template_lab_simulator_runs_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR (current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_lab_simulator_runs",
+    "policyname": "project_template_lab_simulator_runs_write_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "ALL",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_reviews",
+    "policyname": "project_template_reviews_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (reviewer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = project_template_reviews.reviewer_user_id) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.review'::text))))))",
+    "new_qual": null,
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_reviews",
+    "policyname": "project_template_reviews_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((reviewer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) OR (EXISTS ( SELECT 1\n   FROM project_template_revisions\n  WHERE ((project_template_revisions.id = project_template_reviews.revision_id) AND (project_template_revisions.created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_revisions",
+    "policyname": "project_template_revisions_admin_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = 'draft'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = project_template_revisions.created_by_user_id) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.create'::text))))))",
+    "new_qual": null,
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_revisions",
+    "policyname": "project_template_revisions_admin_update_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "UPDATE",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((created_by_user_id IS NULL) OR (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)) AND (EXISTS ( SELECT 1\n   FROM users actor\n  WHERE ((actor.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.update'::text)))) AND (EXISTS ( SELECT 1\n   FROM project_templates parent\n  WHERE ((parent.id = project_template_revisions.template_id) AND ((parent.status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((parent.created_by_user_id IS NULL) OR (parent.created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))))))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((created_by_user_id IS NULL) OR (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)) AND (EXISTS ( SELECT 1\n   FROM users actor\n  WHERE ((actor.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.update'::text)))) AND (EXISTS ( SELECT 1\n   FROM project_templates parent\n  WHERE ((parent.id = project_template_revisions.template_id) AND ((parent.status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((parent.created_by_user_id IS NULL) OR (parent.created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)))))))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_revisions",
+    "policyname": "project_template_revisions_safe_delete_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "DELETE",
+    "qual": "(((status)::text = 'draft'::text) AND (EXISTS ( SELECT 1\n   FROM project_templates parent\n  WHERE ((parent.id = project_template_revisions.template_id) AND ((parent.status)::text = 'draft'::text) AND (NOT parent.is_builtin) AND (parent.current_published_revision_id IS NULL) AND ((current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (parent.created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n           FROM users actor\n          WHERE ((actor.id = parent.created_by_user_id) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (actor.tenant_id IS NULL) AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.delete'::text))))))))))",
+    "with_check": null,
+    "new_qual": "(((status)::text = 'draft'::text) AND (EXISTS ( SELECT 1 FROM project_templates parent WHERE ((parent.id = project_template_revisions.template_id) AND ((parent.status)::text = 'draft'::text) AND (NOT parent.is_builtin) AND (parent.current_published_revision_id IS NULL) AND (current_setting('app.current_user_role'::text, true) = 'admin'::text)))))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_revisions",
+    "policyname": "project_template_revisions_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ?| ARRAY['platform.templates.view'::text, 'platform.templates.create'::text, 'platform.templates.update'::text, 'platform.templates.submit'::text, 'platform.templates.review'::text, 'platform.project_templates.view'::text]))))) OR ((current_setting('app.current_user_role'::text, true) = ANY (ARRAY['tenant_owner'::text, 'tenant_engineer'::text, 'viewer'::text])) AND ((status)::text = 'published'::text)))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR (((current_setting('app.current_user_role'::text, true) = ANY (ARRAY['tenant_owner'::text, 'viewer'::text])) AND ((status)::text = 'published'::text))))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_validation_runs",
+    "policyname": "project_template_validation_runs_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users u\n  WHERE ((u.id = project_template_validation_runs.created_by_user_id) AND (COALESCE((u.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.validate'::text))))))",
+    "new_qual": null,
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_template_validation_runs",
+    "policyname": "project_template_validation_runs_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (EXISTS ( SELECT 1\n   FROM project_template_revisions r\n  WHERE ((r.id = project_template_validation_runs.revision_id) AND ((r.created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) OR (EXISTS ( SELECT 1\n           FROM users u\n          WHERE ((u.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (COALESCE((u.permissions)::jsonb, '[]'::jsonb) ?| ARRAY['platform.templates.validate'::text, 'platform.templates.view'::text, 'platform.project_templates.view'::text]))))))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_templates",
+    "policyname": "project_templates_admin_insert_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = 'draft'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = project_templates.created_by_user_id) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.create'::text))))))",
+    "new_qual": null,
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_templates",
+    "policyname": "project_templates_admin_update_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "UPDATE",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((created_by_user_id IS NULL) OR (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)) AND (EXISTS ( SELECT 1\n   FROM users actor\n  WHERE ((actor.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.update'::text))))))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((status)::text = ANY ((ARRAY['draft'::character varying, 'changes_requested'::character varying])::text[])) AND ((created_by_user_id IS NULL) OR (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)) AND (EXISTS ( SELECT 1\n   FROM users actor\n  WHERE ((actor.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.update'::text))))))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_templates",
+    "policyname": "project_templates_safe_delete_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "DELETE",
+    "qual": "(((status)::text = 'draft'::text) AND (NOT is_builtin) AND (current_published_revision_id IS NULL) AND ((current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (created_by_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND (EXISTS ( SELECT 1\n   FROM users actor\n  WHERE ((actor.id = project_templates.created_by_user_id) AND ((actor.role)::text = 'platform_engineer'::text) AND actor.is_active AND (actor.tenant_id IS NULL) AND (COALESCE((actor.permissions)::jsonb, '[]'::jsonb) ? 'platform.templates.delete'::text)))))))",
+    "with_check": null,
+    "new_qual": "(((status)::text = 'draft'::text) AND (NOT is_builtin) AND (current_published_revision_id IS NULL) AND (current_setting('app.current_user_role'::text, true) = 'admin'::text))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_templates",
+    "policyname": "project_templates_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ?| ARRAY['platform.templates.view'::text, 'platform.templates.create'::text, 'platform.templates.update'::text, 'platform.templates.submit'::text, 'platform.templates.review'::text, 'platform.project_templates.view'::text]))))) OR ((current_setting('app.current_user_role'::text, true) = ANY (ARRAY['tenant_owner'::text, 'tenant_engineer'::text, 'viewer'::text])) AND ((status)::text = 'published'::text)))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR (((current_setting('app.current_user_role'::text, true) = ANY (ARRAY['tenant_owner'::text, 'viewer'::text])) AND ((status)::text = 'published'::text))))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "project_widgets",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "provisioning_sessions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "support_grants",
+    "policyname": "support_grants_select_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR ((current_setting('app.current_user_role'::text, true) = 'tenant_owner'::text) AND (tenant_id = (NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid)) OR ((current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text) AND ((engineer_user_id IS NULL) OR (engineer_user_id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid)) AND (EXISTS ( SELECT 1\n   FROM users\n  WHERE ((users.id = (NULLIF(current_setting('app.current_user_id'::text, true), ''::text))::uuid) AND ((users.role)::text = 'platform_engineer'::text) AND (users.tenant_id IS NULL) AND (users.is_active = true) AND ((COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.tenants.support_view'::text) OR (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.diagnostics.probe'::text) OR (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.diagnostics.trace'::text) OR (COALESCE((users.permissions)::jsonb, '[]'::jsonb) ? 'platform.alerts.acknowledge'::text)))))))",
+    "with_check": null,
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = 'admin'::text) OR (((current_setting('app.current_user_role'::text, true) = 'tenant_owner'::text) AND (tenant_id = (NULLIF(current_setting('app.current_tenant_id'::text, true), ''::text))::uuid))))",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "technical_investigations",
+    "policyname": "technical_investigations_platform_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "ALL",
+    "qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text, 'platform_engineer'::text])))",
+    "with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text, 'platform_engineer'::text])))",
+    "new_qual": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text])))",
+    "new_with_check": "((current_setting('app.bypass_rls'::text, true) = 'true'::text) OR (current_setting('app.current_user_role'::text, true) = ANY (ARRAY['admin'::text])))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "telemetry",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "telemetry_field_definitions",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenant_datastreams",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenant_device_mappings",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenant_feature_overrides",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenant_firmwares",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenant_projects",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "tenants",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "used_ota_tokens",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "users",
+    "policyname": "platform_engineer_read_policy",
+    "permissive": "PERMISSIVE",
+    "roles": [
+      "public"
+    ],
+    "cmd": "SELECT",
+    "qual": "(current_setting('app.current_user_role'::text, true) = 'platform_engineer'::text)",
+    "with_check": null,
+    "new_qual": "false",
+    "new_with_check": null
+  }
+]

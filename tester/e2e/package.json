@@ -1,0 +1,17 @@
+{
+  "name": "aifom-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:admin": "playwright test tests/admin_flow.spec.ts",
+    "test:tenant": "playwright test tests/tenant_flow.spec.ts",
+    "test:ota": "playwright test tests/ota_flow.spec.ts",
+    "report": "playwright show-report ../reports/playwright-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "dotenv": "^16.4.5"
+  }
+}

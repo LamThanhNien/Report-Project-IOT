@@ -1,0 +1,66 @@
+{
+  "title": "Sub-user Management",
+  "subtitle": "Create and manage simple sub-user access for this tenant.",
+  "add_user": "Add sub-user",
+  "edit_user": "Edit sub-user",
+  "remove_user": "Remove sub-user",
+  "no_permission_title": "Permission Denied",
+  "no_permission_desc": "You do not have permission to view this page.",
+  "col": {
+    "email": "Email",
+    "full_name": "Full name",
+    "role": "Role",
+    "status": "Status",
+    "permissions": "Permissions",
+    "created": "Created"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "roles": {
+    "tenant_owner": "Tenant Owner",
+    "viewer": "Viewer"
+  },
+  "permission_summary": {
+    "full_access": "Full access",
+    "view_only": "View only",
+    "custom_access": "Custom access ({{count}} permissions)"
+  },
+  "form": {
+    "email_label": "Email *",
+    "password_label": "Password *",
+    "full_name_label": "Full name",
+    "role_label": "Role",
+    "permissions_label": "Permissions",
+    "role_preset_hint": "Viewer accounts have read-only access. You can select read permissions below.",
+    "invalid_email": "Enter a valid email address.",
+    "rule_min_8": "At least 8 characters",
+    "rule_max_128": "No more than 128 characters",
+    "rule_uppercase": "At least one uppercase letter",
+    "rule_lowercase": "At least one lowercase letter",
+    "rule_number": "At least one number"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "save": "Save changes",
+    "create": "Create sub-user",
+    "saving": "Saving...",
+    "remove": "Remove"
+  },
+  "confirm_remove": {
+    "title": "Remove sub-user",
+    "description": "Remove {{email}} from this tenant? This account will no longer be able to access the tenant portal.",
+    "confirm_btn": "Remove",
+    "cancel_btn": "Cancel"
+  },
+  "empty": {
+    "title": "No sub-users yet",
+    "description": "Add a sub-user to let another person access this tenant."
+  },
+  "banners": {
+    "created_success": "Sub-user created successfully.",
+    "updated_success": "Sub-user updated successfully.",
+    "deleted_success": "Sub-user removed."
+  }
+}

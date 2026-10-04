@@ -1,0 +1,12 @@
+menu "AIFOM OTA security"
+
+config AIFOM_OTA_SIGNING_KEY_SHA256
+    string "Trusted OTA Ed25519 public-key PEM SHA-256"
+    default ""
+    help
+        Lowercase SHA-256 hex digest of the exact PEM public key distributed
+        by the trusted AIFOM firmware signing service. Stable firmware marked
+        verification_required is rejected when this trust root is empty or
+        does not match. Never learn this fingerprint from the OTA message.
+
+endmenu

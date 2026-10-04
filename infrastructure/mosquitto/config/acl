@@ -1,0 +1,76 @@
+# AIFOM MQTT ACL
+# ============================================================
+# ISOLATION MODEL
+# ============================================================
+# Backend (aifom_backend): full read/write access to all device topics.
+# Device (aifom_device): shared credentials for demo convenience.
+#
+# Per-device isolation is enforced at TWO layers:
+#   1. APPLICATION LAYER (primary): MQTT subscriber checks TenantDeviceMapping
+#      before processing any message. Unknown/unassigned devices are rejected.
+#   2. ACL PATTERNS (secondary): If devices use per-device usernames instead
+#      of the shared 'aifom_device' account, Mosquitto enforces per-device
+#      topic access via the pattern rules below (using %u = username).
+#
+# PRODUCTION NOTE: For production deployments, create per-device MQTT
+# credentials (username = device_uid) and remove the shared 'aifom_device'
+# user entry. The pattern-based ACL below will then enforce per-device
+# topic isolation at the broker level.
+# ============================================================
+
+# Backend (admin) user — full access to device topics + $SYS (healthcheck)
+user aifom_backend
+topic read $SYS/#
+topic read devices/+/telemetry
+topic read devices/+/status
+topic read devices/+/heartbeat
+topic read devices/+/events
+topic read devices/+/ota/status
+topic readwrite aifom/devices/+/telemetry
+topic readwrite aifom/devices/+/status
+topic readwrite aifom/devices/+/heartbeat
+topic readwrite aifom/devices/+/ota/result
+topic write devices/+/commands
+topic write devices/+/ota
+
+# Device user — shared credentials for demo/development.
+# In production, replace with per-device usernames (see note above).
+user aifom_device
+# Security: this shared account is intentionally limited to a non-wildcard
+# namespace. Production provisioning should issue username=device_uid
+# credentials or client certificates for the pattern ACL below.
+topic write devices/aifom_device/telemetry
+topic write devices/aifom_device/status
+topic write devices/aifom_device/heartbeat
+topic write devices/aifom_device/events
+topic write devices/aifom_device/ota/status
+topic read devices/aifom_device/commands
+topic read devices/aifom_device/ota
+
+# Current Arduino demo firmware uses DEVICE_ID="fffff" with the shared
+# aifom_device user. Keep this compatibility explicit, without restoring
+# wildcard access for all device ids.
+topic write devices/fffff/telemetry
+topic write devices/fffff/status
+topic write devices/fffff/heartbeat
+topic write devices/fffff/events
+topic write devices/fffff/ota/status
+topic read devices/fffff/commands
+topic read devices/fffff/ota
+
+# Note: anonymous access is disabled by allow_anonymous false in mosquitto.conf.
+# $SYS/# read is granted to aifom_backend above (needed for healthcheck).
+
+# Pattern-based ACL — per-device topic isolation.
+# These rules activate when devices use unique usernames (username = device_uid).
+# With shared 'aifom_device' credentials, %u resolves to 'aifom_device' for
+# all devices, so isolation falls back to the application layer.
+pattern read devices/%u/commands
+pattern read devices/%u/ota
+# Security TODO: replace any remaining shared device credential usage with
+# per-device MQTT credentials or client certificates.
+pattern write devices/%u/telemetry
+pattern write devices/%u/status
+pattern write devices/%u/heartbeat
+pattern write devices/%u/events
+pattern write devices/%u/ota/status

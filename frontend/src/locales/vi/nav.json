@@ -1,0 +1,41 @@
+{
+  "dashboard": "Dashboard",
+  "projects": "Dự án",
+  "devices": "Thiết bị",
+  "monitoring": "Giám sát",
+  "members": "Thành viên",
+  "api_access": "API Access",
+  "settings": "Cài đặt",
+  "account": "Tài khoản",
+  "logout": "Đăng xuất",
+  "view_all_alerts": "Xem tất cả cảnh báo ({{count}} chưa đọc)",
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "projects": "Dự án",
+    "devices": "Thiết bị",
+    "monitoring": "Giám sát",
+    "members": "Thành viên",
+    "api_access": "API Access",
+    "settings": "Cài đặt",
+    "collapse": "Thu gọn",
+    "expand": "Mở rộng",
+    "back_to_projects": "Danh sách dự án",
+    "home": "Home",
+    "datastreams": "Datastreams",
+    "commands": "Commands",
+    "automation": "Automation",
+    "ota_campaigns": "OTA Campaigns"
+  },
+  "topbar": {
+    "notifications": "Thông báo",
+    "recent_alerts": "Cảnh báo gần đây",
+    "no_unread_alerts": "Không có cảnh báo chưa đọc",
+    "view_all_alerts": "Xem tất cả cảnh báo ({{count}} chưa đọc)",
+    "no_alert_feature": "Gói dịch vụ không bao gồm cảnh báo",
+    "account": "Tài khoản",
+    "logout": "Đăng xuất",
+    "theme_light": "Chế độ sáng",
+    "theme_dark": "Chế độ tối",
+    "new_alert": "Cảnh báo mới"
+  }
+}

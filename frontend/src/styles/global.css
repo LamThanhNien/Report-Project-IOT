@@ -1,0 +1,480 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas: #101315;
+    --panel: #171b1f;
+    --panel-2: #1c2126;
+    --border: #2b333d;
+    --focus-ring: #8DA8FF;
+    --status-success: #159B7D;
+    --status-warning: #C98319;
+    --status-error: #D65370;
+    --status-info: #8DA8FF;
+    --color-primary: #18181B;
+    --color-primary-hover: #27272A;
+    --color-primary-foreground: #FFFFFF;
+    --color-primary-soft: rgba(24, 24, 27, 0.05);
+    --color-primary-border: rgba(24, 24, 27, 0.15);
+    --color-primary-text: #18181B;
+    --color-ring: rgba(24, 24, 27, 0.25);
+    --color-cyan-accent: #0EA5E9;
+
+    --color-brand-50: #F4F4F5;
+    --color-brand-100: #E4E4E7;
+    --color-brand-200: #D4D4D8;
+    --color-brand-300: #A1A1AA;
+    --color-brand-400: #71717A;
+    --color-brand-500: #3F3F46;
+    --color-brand-600: #27272A;
+    --color-brand-700: #18181B;
+    --color-brand-800: #09090B;
+    --color-brand-900: #09090B;
+    --color-brand-950: #000000;
+
+    --color-app: 250 250 250;          /* #FAFAFA - Linear Light Canvas */
+    --color-sidebar: 244 244 245;      /* #F4F4F5 - Linear Light Sidebar */
+    --color-topbar: 255 255 255;       /* #FFFFFF */
+    --color-surface: 255 255 255;      /* #FFFFFF */
+    --color-surface-elevated: 250 250 250;
+    --color-surface-muted: 244 244 245;
+    --color-border: 203 213 225;       /* #CBD5E1 - Crisp Slate 300 border for Light Mode */
+    --color-border-subtle: 226 232 240; /* #E2E8F0 - Slate 200 */
+    --color-divider: 226 232 240;
+    --color-text-primary: 24 24 27;    /* #18181B */
+    --color-text-secondary: 82 82 91;  /* #52525B */
+    --color-text-muted: 113 113 122;   /* #71717A */
+    --color-accent: 24 24 27;
+    --color-success: 16 185 129;
+    --color-danger: 239 68 68;
+    --color-warning: 245 158 11;
+
+    /* Shared authenticated-console layout metrics. Toasts use the largest
+       console header height so one global viewport stays safe across roles. */
+    --app-topbar-height: 4rem;
+    --app-client-topbar-height: 3.5rem;
+    --app-toast-safe-header-height: max(var(--app-topbar-height), var(--app-client-topbar-height));
+    --app-toast-safe-gap: 0.75rem;
+    --app-toast-safe-top: calc(var(--app-toast-safe-header-height) + var(--app-toast-safe-gap));
+  }
+
+  .dark {
+    --color-primary: #F4F4F5;
+    --color-primary-hover: #FFFFFF;
+    --color-primary-foreground: #09090B;
+    --color-primary-soft: rgba(244, 244, 245, 0.08);
+    --color-primary-border: rgba(244, 244, 245, 0.2);
+    --color-primary-text: #F4F4F5;
+    --color-ring: rgba(244, 244, 245, 0.3);
+    --color-cyan-accent: #38BDF8;
+
+    --color-brand-50: rgba(244, 244, 245, 0.05);
+    --color-brand-100: rgba(244, 244, 245, 0.1);
+    --color-brand-200: rgba(244, 244, 245, 0.2);
+    --color-brand-300: #D4D4D8;
+    --color-brand-400: #E4E4E7;
+    --color-brand-500: #F4F4F5;
+    --color-brand-600: #FAFAFA;
+    --color-brand-700: #FFFFFF;
+    --color-brand-800: rgba(244, 244, 245, 0.25);
+    --color-brand-900: rgba(244, 244, 245, 0.15);
+    --color-brand-950: rgba(244, 244, 245, 0.08);
+
+    --color-app: 22 22 24;              /* #161618 - Linear Dark Canvas */
+    --color-sidebar: 17 17 19;          /* #111113 - Linear Dark Sidebar */
+    --color-topbar: 34 34 37;           /* #222225 - Linear Dark Topbar */
+    --color-surface: 34 34 37;          /* #222225 - Linear Surface / Card */
+    --color-surface-elevated: 44 44 48; /* #2C2C30 - Elevated Surface */
+    --color-surface-muted: 50 50 55;    /* #323237 */
+    --color-border: 44 44 48;           /* #2C2C30 */
+    --color-border-subtle: 36 36 40;    /* #242428 */
+    --color-divider: 44 44 48;
+    --color-text-primary: 244 244 245;  /* #F4F4F5 */
+    --color-text-secondary: 161 161 170;/* #A1A1AA */
+    --color-text-muted: 161 161 170;   /* #71717A */
+    --color-accent: 244 244 245;
+    --color-success: 52 211 153;
+    --color-danger: 248 113 113;
+    --color-warning: 251 191 36;
+  }
+
+  html, body, #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-app text-text-primary antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  .dark body {
+    @apply bg-app text-text-primary;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus-ring) 35%, transparent);
+  }
+
+  /* Global Firefox Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+  }
+  .dark * {
+    scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+  }
+
+  /* Global WebKit / Blink Scrollbar (Chrome, Edge, Safari) */
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.45);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.85);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.7);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+@layer components {
+  .sidebar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.36) transparent;
+  }
+  .sidebar-scrollbar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .sidebar-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.3);
+    border-radius: 9999px;
+  }
+  .sidebar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.5);
+  }
+  .dark .sidebar-scrollbar {
+    scrollbar-color: rgba(189, 189, 189, 0.25) transparent;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+
+  .card {
+    @apply bg-white border border-slate-300 rounded-2xl shadow-sm
+           transition-all duration-200
+           dark:bg-surface dark:border-border-subtle dark:shadow-none;
+  }
+
+  .input, .select {
+    @apply h-9 w-full rounded-md border border-slate-300 bg-surface px-3 text-sm text-text-primary placeholder:text-text-muted
+           dark:bg-surface-muted dark:border-border-subtle dark:text-text-primary dark:placeholder:text-text-muted;
+  }
+  .input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary), 0 0 0 4px var(--color-ring);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl text-sm font-medium
+           transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn border border-slate-200 bg-white text-slate-900 shadow-sm
+           hover:border-slate-300 hover:bg-slate-50 hover:shadow-md active:scale-[.98]
+           dark:border-[#131313] dark:bg-[#131313] dark:text-white dark:shadow-none
+           dark:hover:bg-[#1e1e1e] dark:active:bg-[#131313];
+  }
+  .btn-secondary {
+    @apply btn border border-slate-200 bg-white text-slate-800 shadow-sm
+           hover:border-slate-300 hover:bg-slate-50 hover:shadow-md active:scale-[.98]
+           dark:border-[#131313] dark:bg-[#131313] dark:text-white dark:shadow-none
+           dark:hover:bg-[#1e1e1e] dark:active:bg-[#131313];
+  }
+  .btn-ghost {
+    @apply btn border border-transparent bg-transparent text-text-secondary
+           hover:border-slate-200 hover:bg-slate-50 hover:text-text-primary active:bg-slate-100
+           dark:text-text-secondary dark:hover:border-slate-700 dark:hover:bg-surface dark:hover:text-text-primary
+           dark:active:bg-app;
+  }
+  .btn-danger {
+    @apply btn border border-rose-600 bg-rose-600 text-white hover:border-rose-700 hover:bg-rose-700
+           dark:border-rose-500 dark:bg-rose-600 dark:hover:border-rose-400 dark:hover:bg-rose-700;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 h-5 min-h-[20px] rounded-full text-[10px] font-semibold leading-none whitespace-nowrap uppercase tracking-wide;
+  }
+  .tone-success-chip {
+    @apply bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-400/20;
+  }
+  .tone-success-dot {
+    @apply bg-emerald-500 dark:bg-emerald-400;
+  }
+  .tone-success-text {
+    @apply text-emerald-700 dark:text-emerald-300;
+  }
+  .tone-success-bg {
+    @apply bg-emerald-50 dark:bg-emerald-500/10;
+  }
+  .tone-warning-chip {
+    @apply bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-400/20;
+  }
+  .tone-warning-dot {
+    @apply bg-amber-500 dark:bg-amber-400;
+  }
+  .tone-warning-text {
+    @apply text-amber-700 dark:text-amber-300;
+  }
+  .tone-warning-bg {
+    @apply bg-amber-50 dark:bg-amber-500/10;
+  }
+  .tone-danger-chip {
+    @apply bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-400/20;
+  }
+  .tone-danger-dot {
+    @apply bg-rose-500 dark:bg-rose-400;
+  }
+  .tone-danger-text {
+    @apply text-rose-700 dark:text-rose-300;
+  }
+  .tone-danger-bg {
+    @apply bg-rose-50 dark:bg-rose-500/10;
+  }
+  .tone-info-chip {
+    @apply bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-400/20;
+  }
+  .tone-info-dot {
+    @apply bg-sky-500 dark:bg-sky-400;
+  }
+  .tone-info-text {
+    @apply text-sky-700 dark:text-sky-300;
+  }
+  .tone-info-bg {
+    @apply bg-sky-50 dark:bg-sky-500/10;
+  }
+  .tone-neutral-chip {
+    @apply bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-400/15;
+  }
+  .tone-neutral-dot {
+    @apply bg-zinc-400 dark:bg-zinc-400;
+  }
+  .tone-neutral-text {
+    @apply text-zinc-600 dark:text-zinc-400;
+  }
+  .tone-neutral-bg {
+    @apply bg-zinc-100 dark:bg-zinc-500/10;
+  }
+  .kbd {
+    @apply px-1.5 py-0.5 text-[10px] rounded border border-border-subtle bg-surface-elevated text-text-secondary
+           dark:border-border-subtle dark:bg-surface-elevated dark:text-text-secondary;
+  }
+  .label-xs {
+    @apply block text-xs font-medium uppercase tracking-wider text-text-muted dark:text-text-muted;
+  }
+
+  /* Section label — uppercase label for metric cards, form fields, section headers */
+  .section-label {
+    @apply block text-[11px] font-semibold uppercase tracking-wider text-text-muted dark:text-text-muted;
+  }
+
+  /* Filter bar — consistent wrapper for search + filter controls */
+  .filter-bar {
+    @apply flex items-center gap-3 flex-wrap;
+  }
+
+  /* Stat card — lightweight inline stat display */
+  .stat-card {
+    @apply flex flex-col gap-1 p-3 rounded-lg bg-surface-elevated dark:bg-surface-elevated/70;
+  }
+
+  /* Page section — consistent bottom margin between page sections */
+  .page-section {
+    @apply mb-6;
+  }
+}
+
+/* ── Resizable Table Columns (Synchronous CSS Variable Widths) ────────────── */
+@media (min-width: 768px) {
+  /* Primary Columns */
+  .col-name_uid {
+    width: var(--col-name_uid, 320px);
+  }
+  .col-name_key {
+    width: var(--col-name_key, 280px);
+  }
+  .col-title {
+    width: var(--col-title, 280px);
+  }
+  .col-name {
+    width: var(--col-name, 280px);
+  }
+
+  /* Common & Device Columns */
+  .col-project {
+    width: var(--col-project, 180px);
+  }
+  .col-group {
+    width: var(--col-group, 160px);
+  }
+  .col-status {
+    width: var(--col-status, 128px);
+  }
+  .col-hardware {
+    width: var(--col-hardware, 128px);
+  }
+  .col-firmware {
+    width: var(--col-firmware, 128px);
+  }
+  .col-last_seen {
+    width: var(--col-last_seen, 156px);
+  }
+  .col-actions {
+    width: var(--col-actions, 96px);
+  }
+
+  /* Alerts Columns */
+  .col-device {
+    width: var(--col-device, 144px);
+  }
+  .col-severity {
+    width: var(--col-severity, 128px);
+  }
+  .col-source {
+    width: var(--col-source, 112px);
+  }
+  .col-timestamp {
+    width: var(--col-timestamp, 128px);
+  }
+
+  /* Automation Columns */
+  .col-triggered_by {
+    width: var(--col-triggered_by, 176px);
+  }
+  .col-target {
+    width: var(--col-target, 160px);
+  }
+  .col-last_triggered {
+    width: var(--col-last_triggered, 128px);
+  }
+
+  /* Device Groups & Common Timestamps */
+  .col-device_count {
+    width: var(--col-device_count, 112px);
+  }
+  .col-updated_at {
+    width: var(--col-updated_at, 144px);
+  }
+  .col-updated {
+    width: var(--col-updated, 144px);
+  }
+
+  /* Monitoring Columns */
+  .col-health_metrics {
+    width: var(--col-health_metrics, 224px);
+  }
+
+  /* Provisioning Columns */
+  .col-expires_at {
+    width: var(--col-expires_at, 176px);
+  }
+  .col-expires {
+    width: var(--col-expires, 176px);
+  }
+  .col-created_at {
+    width: var(--col-created_at, 176px);
+  }
+  .col-created {
+    width: var(--col-created, 176px);
+  }
+
+  /* Projects Columns */
+  .col-structure {
+    width: var(--col-structure, 128px);
+  }
+  .col-description {
+    width: var(--col-description, 176px);
+  }
+
+  /* Datastream Columns */
+  .col-type {
+    width: var(--col-type, 128px);
+  }
+  .col-direction {
+    width: var(--col-direction, 176px);
+  }
+  .col-range_unit {
+    width: var(--col-range_unit, 160px);
+  }
+  .col-default {
+    width: var(--col-default, 128px);
+  }
+}
+
+/* ── Resizable Table Visual Filler ───────────────────────────────────────── */
+/*
+ * Trailing flex-1 filler divs that absorb the remaining card width after
+ * all controlled-width data columns. They have NO data, NO resize handle,
+ * NO sort/filter. They ONLY provide visual surface continuation.
+ *
+ * Rules:
+ *   - min-width: 0  → filler can shrink to 0; never causes horizontal scroll
+ *   - flex: 1       → absorbs all remaining space when sum(cols) < container
+ *   - When sum(cols) > container, filler = 0, overflow-x-auto scrolls
+ *
+ * HEADER filler: matches header background + top/bottom border so the
+ *   table surface visually extends to the card edge.
+ * ROW filler: inherits the row's background so hover, selection, and
+ *   dark-mode states cover the full row width automatically.
+ */
+
+@media (min-width: 768px) {
+  /* Header surface filler — same bg/border as table header */
+  [data-resizable-columns] .table-header-filler,
+  [data-resizable-columns] .table-row-filler {
+    display: none;
+  }
+
+  .table-header-filler {
+    flex: 1 1 0%;
+    min-width: 0;
+    /* No content; purely structural */
+  }
+
+  /* Row surface filler — inherits parent row bg (hover, selected, etc.) */
+  .table-row-filler {
+    flex: 1 1 0%;
+    min-width: 0;
+    /* Inherits background from parent row div — no explicit bg needed */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

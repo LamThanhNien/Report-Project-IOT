@@ -1,0 +1,61 @@
+{
+  "update_failed": "Unable to update information.",
+  "name_max_length": "Name must not exceed 255 characters.",
+  "loading": "Loading account...",
+  "title": "Account",
+  "subtitle": "Update your personal information in the tenant portal",
+  "personal_info": "Personal Information",
+  "display_name": "Display name",
+  "ph_full_name": "Enter your name",
+  "display_name_hint": "This name appears in the topbar, sidebar, and account identity areas.",
+  "email_login": "Login email",
+  "updated_success": "Account information updated.",
+  "save_changes": "Save Changes",
+  "current_tenant": "Current tenant",
+  "label_tenant": "Tenant",
+  "label_tenant_slug": "Tenant slug",
+  "label_role": "Role",
+  "label_permissions": "Permissions",
+  "permission_unit": "permissions",
+  "roles": {
+    "owner": "Owner",
+    "viewer": "Viewer"
+  },
+  "features": {
+    "device_management": "Device Management",
+    "ota_update": "OTA / Firmware Updates",
+    "firmware_history": "Firmware History",
+    "telemetry_view": "Telemetry Monitoring",
+    "advanced_monitoring": "Advanced Monitoring",
+    "alert_management": "Alert Management",
+    "api_access": "API Access",
+    "user_management": "User Management",
+    "audit_log": "Audit Log"
+  },
+  "section": {
+    "account": "Account"
+  },
+  "api_access": {
+    "title": "API Access",
+    "subtitle": "API access information for integrations and automation",
+    "credentials": "Authentication details",
+    "tenant_id": "Tenant ID",
+    "tenant_slug": "Tenant Slug",
+    "base_url": "Base URL",
+    "key_notice": "API key management is not supported yet. Use the JWT token from login to authenticate API calls.",
+    "documentation": "API documentation",
+    "rest_notice": "The API follows the REST standard with JSON requests and responses. All endpoints require Bearer token authentication.",
+    "main_endpoints": "Main endpoints",
+    "swagger": "View Swagger Docs",
+    "example": "Usage example",
+    "endpoints": {
+      "devices": "Device list",
+      "telemetry": "Device telemetry",
+      "firmware": "Firmware list",
+      "ota": "OTA jobs",
+      "alerts": "Anomaly alerts",
+      "projects": "Project list",
+      "commands": "Send device command"
+    }
+  }
+}

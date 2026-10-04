@@ -1,0 +1,76 @@
+name: backend-ci
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  push:
+    branches: [main, Dev/master]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  api-test:
+    name: Backend — lint + pytest
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: timescale/timescaledb:latest-pg15
+        env:
+          POSTGRES_USER: aifom
+          POSTGRES_PASSWORD: aifom_password
+          POSTGRES_DB: aifom
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aifom"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install with dev extras
+        run: pip install -e ".[dev]"
+      - name: Ruff lint
+        run: ruff check app/ tests/
+      - name: Ruff format check
+        run: ruff format --check app/ tests/
+      - name: Initialize Database Roles
+        run: |
+          python -c "
+          import psycopg2
+          conn = psycopg2.connect('postgresql://aifom:aifom_password@localhost:5432/aifom')
+          with conn.cursor() as cur:
+              cur.execute(open('../infrastructure/postgres/init/01_init.sql').read())
+          conn.commit()
+          conn.close()
+          "
+      - name: Run Alembic Migrations
+        env:
+          DATABASE_URL: "postgresql://aifom:aifom_password@localhost:5432/aifom"
+          APP_DATABASE_URL: "postgresql://aifom:aifom_password@localhost:5432/aifom"
+          PGOPTIONS: "-c session_replication_role=replica"
+          JWT_SECRET: "1ac75a7ecb681fa5f8f32dcdd80be3cd63989808b75e60418a1115ffece985ab"
+          JWT_REFRESH_SECRET: "e37e1e34b1cc1bd64aedde0f726211af0a6575f84b684551ada263ab44c281a3"
+          OTA_TOKEN_SECRET: "abfbca2d0d0dca9e322b28b6404333e1702e8ec9ba4ba29ba76e020363e0f8de"
+          MQTT_USERNAME: "aifom-test-api"
+          MQTT_PASSWORD: "aifom-test-password"
+        run: alembic upgrade head
+      - name: Pytest
+        env:
+          DATABASE_URL: "postgresql://aifom:aifom_password@localhost:5432/aifom"
+          APP_DATABASE_URL: "postgresql://aifom:aifom_password@localhost:5432/aifom"
+          JWT_SECRET: "1ac75a7ecb681fa5f8f32dcdd80be3cd63989808b75e60418a1115ffece985ab"
+          JWT_REFRESH_SECRET: "e37e1e34b1cc1bd64aedde0f726211af0a6575f84b684551ada263ab44c281a3"
+          OTA_TOKEN_SECRET: "abfbca2d0d0dca9e322b28b6404333e1702e8ec9ba4ba29ba76e020363e0f8de"
+          MQTT_USERNAME: "aifom-test-api"
+          MQTT_PASSWORD: "aifom-test-password"
+        run: pytest tests/ -q

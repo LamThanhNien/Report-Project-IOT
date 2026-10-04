@@ -1,0 +1,35 @@
+# Example AIFOM firmware configuration.
+#
+# Copy this file to `sdkconfig.defaults.local` (gitignored) OR merge the lines
+# you need into `sdkconfig.defaults`, then run `idf.py reconfigure`.
+# Never commit real Wi-Fi credentials.
+
+CONFIG_AIFOM_WIFI_SSID="my-wifi-ssid"
+CONFIG_AIFOM_WIFI_PASSWORD="my-wifi-password"
+CONFIG_AIFOM_ENABLE_MDNS_DISCOVERY=y
+CONFIG_AIFOM_MDNS_HOST="aifom.local"
+
+# MQTT discovery uses mDNS service discovery: _aifom-mqtt._tcp.local,
+# then _mqtt._tcp.local. Do not put a fixed PC IP in firmware config.
+CONFIG_AIFOM_MQTT_HOST="aifom.local"
+CONFIG_AIFOM_MQTT_SCHEME="mqtt"
+CONFIG_AIFOM_MQTT_PORT=1883
+CONFIG_AIFOM_API_PORT=8000
+CONFIG_AIFOM_FALLBACK_API_BASE_URL="http://aifom.local:8000"
+
+CONFIG_AIFOM_DEVICE_UID="esp32-demo-001"
+
+# MQTT credentials — must match MQTT_DEVICE_USER / MQTT_DEVICE_PASSWORD in .env
+# If the broker has allow_anonymous false, these MUST be set or the device cannot connect.
+# CONFIG_AIFOM_MQTT_USERNAME="aifom_device"
+# CONFIG_AIFOM_MQTT_PASSWORD="aifom_device_pass"
+
+# Required before installing firmware whose OTA metadata sets
+# verification_required=true. Compute SHA-256 over the exact trusted public
+# key PEM emitted by the signing service; do not copy a fingerprint from an
+# OTA MQTT message.
+# CONFIG_AIFOM_OTA_SIGNING_KEY_SHA256="<64 lowercase hex characters>"
+
+# Intervals (milliseconds)
+CONFIG_AIFOM_TELEMETRY_INTERVAL_MS=5000
+CONFIG_AIFOM_HEARTBEAT_INTERVAL_MS=15000

@@ -1,0 +1,53 @@
+{
+  "section": {
+    "activity_log": "Nhật ký hoạt động"
+  },
+  "title": "Nhật ký hoạt động (Audit Logs)",
+  "description": "Theo dõi lịch sử truy cập, thao tác cấu hình và sự kiện bảo mật",
+  "actor": "Người thực hiện",
+  "action": "Hành động",
+  "resource": "Tài nguyên",
+  "timestamp": "Thời gian",
+  "ip_address": "Địa chỉ IP",
+  "details": "Chi tiết",
+  "filter_action": "Lọc theo hành động",
+  "filter_resource": "Lọc theo tài nguyên",
+  "total_events": "Tổng sự kiện",
+  "action_types": "Loại hành động",
+  "showing": "Đang hiển thị",
+  "tab_list": "Danh sách log",
+  "tab_timeline": "Dòng thời gian",
+  "resource_placeholder": "VD: device",
+  "date_from": "Từ ngày",
+  "date_to": "Đến ngày",
+  "resource_id": "ID tài nguyên",
+  "no_matching_logs": "Không tìm thấy nhật ký nào phù hợp",
+  "no_logs": "Chưa có nhật ký nào",
+  "actions": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "assign_device": "Gán thiết bị",
+    "unassign_device": "Bỏ gán thiết bị",
+    "upload_firmware": "Tải firmware",
+    "create_ota_job": "Tạo OTA job",
+    "create_project": "Tạo project",
+    "delete_project": "Xóa project",
+    "create_widget": "Tạo widget",
+    "send_command": "Gửi lệnh",
+    "device_created": "Tạo thiết bị",
+    "device_deleted": "Xóa thiết bị"
+  },
+  "action_labels": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "assign_device": "Gán thiết bị",
+    "unassign_device": "Bỏ gán thiết bị",
+    "upload_firmware": "Tải firmware",
+    "create_ota_job": "Tạo OTA job",
+    "create_project": "Tạo dự án",
+    "delete_project": "Xoá dự án",
+    "send_command": "Gửi lệnh",
+    "device_created": "Tạo thiết bị",
+    "device_deleted": "Xoá thiết bị"
+  }
+}

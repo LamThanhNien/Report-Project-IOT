@@ -1,0 +1,100 @@
+menu "AIFOM Edge Node"
+
+    config AIFOM_WIFI_SSID
+        string "Wi-Fi SSID"
+        default ""
+        help
+            Wi-Fi SSID for the AIFOM edge node. Override in sdkconfig.defaults.local
+            or via `idf.py menuconfig` — do NOT commit real credentials.
+
+    config AIFOM_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+        help
+            Wi-Fi password. Leave empty for open networks.
+
+    config AIFOM_WIFI_MAXIMUM_RETRY
+        int "Max Wi-Fi reconnect attempts before reset"
+        default 10
+
+    config AIFOM_ENABLE_MDNS_DISCOVERY
+        bool "Enable mDNS discovery for local server"
+        default y
+
+    config AIFOM_MDNS_HOST
+        string "mDNS host for API/MQTT (example: aifom.local)"
+        default "aifom.local"
+
+    config AIFOM_MQTT_HOST
+        string "Legacy MQTT broker host"
+        default "aifom.local"
+        help
+            MQTT discovery uses mDNS service discovery by default:
+            _aifom-mqtt._tcp.local, then _mqtt._tcp.local.
+            Do not use a fixed PC IP for normal firmware builds.
+
+    config AIFOM_MQTT_SCHEME
+        string "MQTT URI scheme"
+        default "mqtt"
+        help
+            Use "mqtt" for local development or "mqtts" for TLS-enabled
+            production brokers on port 8883.
+
+    config AIFOM_MQTT_PORT
+        int "MQTT broker port"
+        default 1883
+        range 1 65535
+
+    config AIFOM_MQTT_USERNAME
+        string "MQTT username"
+        default ""
+        help
+            MQTT username for broker authentication.
+            Must match MQTT_DEVICE_USER in the backend .env file.
+            Leave empty only if the broker allows anonymous access.
+
+    config AIFOM_MQTT_PASSWORD
+        string "MQTT password"
+        default ""
+        help
+            MQTT password for broker authentication.
+            Must match MQTT_DEVICE_PASSWORD in the backend .env file.
+            Leave empty only if the broker allows anonymous access.
+
+    config AIFOM_API_PORT
+        int "API port (for logging / URL hints)"
+        default 8000
+        range 1 65535
+
+    config AIFOM_FALLBACK_API_BASE_URL
+        string "Fallback API base URL"
+        default "http://aifom.local:8000"
+        help
+            Used only for API URL hints or non-MQTT HTTP fallback paths.
+
+    config AIFOM_DEVICE_UID
+        string "Device UID (leave blank to auto-generate from MAC)"
+        default ""
+        help
+            If blank, the firmware derives a UID like `esp32-aabbccddeeff` from
+            the chip's base MAC address.
+
+    config AIFOM_PROVISIONING_TOKEN
+        string "Device provisioning token"
+        default ""
+        help
+            Token required for device self-registration with the AIFOM backend.
+            Must match DEVICE_PROVISIONING_SECRET in the backend .env file.
+            Leave empty to disable self-registration (admin must pre-register).
+
+    config AIFOM_TELEMETRY_INTERVAL_MS
+        int "Telemetry publish interval (ms)"
+        default 5000
+        range 1000 60000
+
+    config AIFOM_HEARTBEAT_INTERVAL_MS
+        int "Heartbeat publish interval (ms)"
+        default 15000
+        range 1000 60000
+
+endmenu

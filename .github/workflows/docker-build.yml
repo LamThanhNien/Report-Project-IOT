@@ -1,0 +1,53 @@
+name: docker-build
+
+on:
+  pull_request:
+    paths:
+      - 'backend/Dockerfile'
+      - 'frontend/Dockerfile'
+      - 'infrastructure/**'
+      - '.github/workflows/docker-build.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'backend/Dockerfile'
+      - 'frontend/Dockerfile'
+      - 'infrastructure/**'
+      - '.github/workflows/docker-build.yml'
+
+jobs:
+  validate-compose:
+    name: Validate docker-compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render .env from example
+        run: cp .env.example .env
+      - name: docker compose config (dev)
+        run: docker compose --env-file .env -f infrastructure/docker-compose.dev.yml config -q
+
+  build-backend-image:
+    name: Build backend Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: aifom-backend:ci
+
+  build-frontend-image:
+    name: Build frontend Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: aifom-frontend:ci

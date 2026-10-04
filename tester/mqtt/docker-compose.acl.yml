@@ -1,0 +1,10 @@
+services:
+  mosquitto-acl-test:
+    image: eclipse-mosquitto:2
+    container_name: aifom-mosquitto-acl-test
+    ports:
+      - "18885:1883"
+    volumes:
+      - ./fixtures/mosquitto.acl.conf:/mosquitto/config/mosquitto.conf:ro
+      - ../../infrastructure/mosquitto/config/acl.prod:/mosquitto/config/acl:ro
+      - ./fixtures/passwd_test:/mosquitto/config/passwd:ro

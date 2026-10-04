@@ -1,0 +1,110 @@
+# Local environment
+.env
+.env.*
+!.env.example
+!.env.production.example
+.local/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest-report/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+.uv-cache/
+.uv-python/
+.tmp/
+*.egg-info/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/coverage/
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Generated test reports
+tester/e2e/playwright-report/
+tester/e2e/test-results/
+tester/reports/*.html
+tester/reports/*.json
+
+# ESP-IDF
+iot/firmware/build/
+iot/firmware/sdkconfig
+iot/firmware/managed_components/
+iot/src/Esp32/.pio/
+iot/src/Esp32/sdkconfig.*
+
+# Backend build outputs
+backend/dist/
+backend/build/
+backend/.coverage
+backend/htmlcov/
+
+# Test/coverage artifacts
+.coverage
+coverage/
+
+# AI/ML data and artifacts
+ai/datasets/raw/*
+ai/datasets/processed/*
+ai/models/*
+ai/export/tflite/*
+ai/export/esp32/*
+!**/.gitkeep
+*.bin
+*.tflite
+*.onnx
+*.pt
+*.h5
+
+# Locally generated/versioned ML model artifacts
+ml/models/versions/*
+!ml/models/versions/.gitkeep
+
+# Docker and local volumes
+docker-data/
+minio-data/
+postgres-data/
+timescale-data/
+grafana-data/
+
+# Logs
+*.log
+
+# Legacy launcher artifacts
+Aifom/
+
+# Duplicate packaged documentation artifact
+docs/thesis.rar
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local AI tooling / assistant state
+.codex/
+.codex-screenshots/
+.claude/
+.graphifyignore
+graphify-out/
+AGENT_PROGRESS.md
+AGENT_FINAL_REPORT.md
+AGENTS.md
+CLAUDE.md
+CLEANUP_REPORT.md
+
+# Graphify local semantic cache
+graphify-out/cache/semantic/
+infrastructure/mosquitto/config/passwd
+infrastructure/mosquitto/config/passwd.prod
+.agents/
+.tmp_frames/

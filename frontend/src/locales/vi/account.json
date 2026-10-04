@@ -1,0 +1,61 @@
+{
+  "update_failed": "Không thể cập nhật thông tin.",
+  "name_max_length": "Họ tên không được vượt quá 255 ký tự.",
+  "loading": "Đang tải tài khoản...",
+  "title": "Tài khoản",
+  "subtitle": "Cập nhật thông tin cá nhân trong tenant portal",
+  "personal_info": "Thông tin cá nhân",
+  "display_name": "Họ tên hiển thị",
+  "ph_full_name": "Nhập họ tên",
+  "display_name_hint": "Họ tên này hiển thị ở topbar, sidebar và các khu vực nhận diện tài khoản.",
+  "email_login": "Email đăng nhập",
+  "updated_success": "Đã cập nhật thông tin tài khoản.",
+  "save_changes": "Lưu thay đổi",
+  "current_tenant": "Tenant hiện tại",
+  "label_tenant": "Tenant",
+  "label_tenant_slug": "Tenant slug",
+  "label_role": "Vai trò",
+  "label_permissions": "Quyền truy cập",
+  "permission_unit": "quyền",
+  "roles": {
+    "owner": "Chủ tenant",
+    "viewer": "Người xem"
+  },
+  "features": {
+    "device_management": "Quản lý thiết bị",
+    "ota_update": "Cập nhật OTA / Firmware",
+    "firmware_history": "Lịch sử Firmware",
+    "telemetry_view": "Giám sát Telemetry",
+    "advanced_monitoring": "Giám sát nâng cao",
+    "alert_management": "Quản lý cảnh báo",
+    "api_access": "Truy cập API",
+    "user_management": "Quản lý người dùng",
+    "audit_log": "Nhật ký hoạt động"
+  },
+  "api_access": {
+    "title": "Truy cập API",
+    "subtitle": "Thông tin truy cập API cho tích hợp và tự động hóa",
+    "credentials": "Thông tin xác thực",
+    "tenant_id": "Tenant ID",
+    "tenant_slug": "Tenant Slug",
+    "base_url": "Base URL",
+    "key_notice": "Quản lý API key chưa được hỗ trợ. Sử dụng JWT token từ quá trình đăng nhập để xác thực API.",
+    "documentation": "Tài liệu API",
+    "rest_notice": "API tuân theo chuẩn REST với request và response JSON. Tất cả endpoint yêu cầu xác thực Bearer token.",
+    "main_endpoints": "Các endpoint chính",
+    "swagger": "Xem Swagger Docs",
+    "example": "Ví dụ sử dụng",
+    "endpoints": {
+      "devices": "Danh sách thiết bị",
+      "telemetry": "Telemetry thiết bị",
+      "firmware": "Danh sách firmware",
+      "ota": "Danh sách OTA job",
+      "alerts": "Cảnh báo bất thường",
+      "projects": "Danh sách dự án",
+      "commands": "Gửi lệnh thiết bị"
+    }
+  },
+  "section": {
+    "account": "Account"
+  }
+}

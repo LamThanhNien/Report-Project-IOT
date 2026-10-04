@@ -1,0 +1,98 @@
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 768m
+    cpus: 1.0
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001" --certs-dir /certs
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:?Set MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:?Set MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+      - ./minio/certs:/certs:ro
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    mem_limit: 512m
+    cpus: 0.75
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "${MQTT_HOST_PORT:-8883}:8883"
+    volumes:
+      - ./mosquitto/config/mosquitto.prod.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/config/acl.prod:/mosquitto/config/acl:ro
+      - ${MQTT_PASSWORD_FILE:?Set MQTT_PASSWORD_FILE to an externally provisioned per-device password file}:/mosquitto/config/passwd:ro
+      - ./mosquitto/certs:/mosquitto/certs:ro
+      - ./mosquitto/docker-entrypoint.sh:/docker-entrypoint.sh:ro
+      - mosquitto_data:/mosquitto/data
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
+    environment:
+      MQTT_PASSWORD_FILE_MANAGED_EXTERNALLY: "true"
+    mem_limit: 256m
+    cpus: 0.5
+
+  api:
+    build: ../backend
+    restart: unless-stopped
+    env_file:
+      - path: ../.env.production
+        required: false
+    environment:
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      API_HOST_PORT: ${API_HOST_PORT:-8000}
+      MQTT_HOST: ${MQTT_HOST:-mosquitto}
+      MQTT_PORT: ${MQTT_PORT:-8883}
+      MQTT_HOST_PORT: ${MQTT_HOST_PORT:-8883}
+      MQTT_TLS_ENABLED: "true"
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio:9000}
+      MINIO_SECURE: "true"
+      AUTH_COOKIE_SECURE: "true"
+      AUTH_LEGACY_TOKEN_RESPONSE: "false"
+      PYTHONPATH: /app
+    ports:
+      - "${API_HOST_PORT:-8000}:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+      minio:
+        condition: service_healthy
+    mem_limit: 768m
+    cpus: 1.0
+
+volumes:
+  postgres_data:
+  minio_data:
+  mosquitto_data:

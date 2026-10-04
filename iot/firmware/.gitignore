@@ -1,0 +1,7 @@
+build/
+sdkconfig
+sdkconfig.old
+sdkconfig.ci
+
+# secrets must never be committed
+sdkconfig.defaults.local

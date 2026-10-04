@@ -1,0 +1,53 @@
+{
+  "section": {
+    "activity_log": "Activity Log"
+  },
+  "title": "Audit Logs",
+  "description": "Track access history, configuration changes, and security events in your workspace",
+  "actor": "Actor",
+  "action": "Action",
+  "resource": "Resource Type",
+  "timestamp": "Timestamp",
+  "ip_address": "IP Address",
+  "details": "Details",
+  "filter_action": "Filter by action",
+  "filter_resource": "Filter by resource",
+  "total_events": "Total Events",
+  "action_types": "Action Types",
+  "showing": "Showing",
+  "tab_list": "Log List",
+  "tab_timeline": "Timeline",
+  "resource_placeholder": "e.g. device",
+  "date_from": "From Date",
+  "date_to": "To Date",
+  "resource_id": "Resource ID",
+  "no_matching_logs": "No matching audit logs found",
+  "no_logs": "No audit logs recorded yet",
+  "actions": {
+    "login": "Login",
+    "logout": "Logout",
+    "assign_device": "Assign Device",
+    "unassign_device": "Unassign Device",
+    "upload_firmware": "Upload Firmware",
+    "create_ota_job": "Create OTA Job",
+    "create_project": "Create Project",
+    "delete_project": "Delete Project",
+    "create_widget": "Create Widget",
+    "send_command": "Send Device Command",
+    "device_created": "Create Device",
+    "device_deleted": "Delete Device"
+  },
+  "action_labels": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "assign_device": "Assign device",
+    "unassign_device": "Unassign device",
+    "upload_firmware": "Upload firmware",
+    "create_ota_job": "Create OTA job",
+    "create_project": "Create project",
+    "delete_project": "Delete project",
+    "send_command": "Send command",
+    "device_created": "Create device",
+    "device_deleted": "Delete device"
+  }
+}

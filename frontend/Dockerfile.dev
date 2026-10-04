@@ -1,0 +1,11 @@
+# Development Dockerfile — runs Vite dev server
+# Usage: docker build -f Dockerfile.dev -t aifom-frontend-dev .
+
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm install
+COPY . .
+
+EXPOSE 5173
+CMD ["npm", "run", "dev"]

@@ -1,0 +1,41 @@
+{
+  "dashboard": "Dashboard",
+  "projects": "Projects",
+  "devices": "Devices",
+  "monitoring": "Monitoring",
+  "members": "Members",
+  "api_access": "API Access",
+  "settings": "Settings",
+  "account": "Account",
+  "logout": "Sign Out",
+  "view_all_alerts": "View all alerts ({{count}} unread)",
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "devices": "Devices",
+    "monitoring": "Monitoring",
+    "members": "Members",
+    "api_access": "API Access",
+    "settings": "Settings",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "back_to_projects": "Projects List",
+    "home": "Home",
+    "datastreams": "Datastreams",
+    "commands": "Commands",
+    "automation": "Automation",
+    "ota_campaigns": "OTA Campaigns"
+  },
+  "topbar": {
+    "notifications": "Notifications",
+    "recent_alerts": "Recent Alerts",
+    "no_unread_alerts": "No unread alerts",
+    "view_all_alerts": "View all alerts ({{count}} unread)",
+    "no_alert_feature": "Service plan does not include alert management",
+    "account": "Account",
+    "logout": "Sign Out",
+    "theme_light": "Light Mode",
+    "theme_dark": "Dark Mode",
+    "new_alert": "New Alert"
+  }
+}
